@@ -66,6 +66,13 @@ function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>)
     setSearchText(value);
   }
 
+  function handleClick(event: React.MouseEvent<HTMLTableSectionElement, MouseEvent>) {
+    const target = event.target as HTMLElement;
+    const parent = target.parentElement;
+    if (!parent) return;
+    router.push(`/contact/${parent.id}`);
+  }
+
   return (
     <Stack
       sx={{
@@ -127,9 +134,10 @@ function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>)
               <TableCell>Created At</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody onClick={handleClick}>
             {data.results.map((row, index) => (
               <TableRow
+                id={String(row.id)}
                 key={index}
                 sx={{
                   cursor: 'pointer',
