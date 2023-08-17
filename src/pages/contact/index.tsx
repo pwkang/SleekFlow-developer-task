@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Box,
-  Button,
   Pagination,
   Stack,
   Table,
@@ -16,6 +15,7 @@ import {
 import {fetchContacts} from '@/api';
 import {GetServerSideProps, InferGetServerSidePropsType} from 'next';
 import {useRouter} from 'next/router';
+import {useDebounce} from 'react-use';
 
 interface Repo {
   data: IGetContactResponse;
@@ -36,6 +36,8 @@ export const getServerSideProps: GetServerSideProps<Repo> = async ({query}) => {
 function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
   const page = router.query.page ? Number(router.query.page) : 1;
+  const querySearchText = router.query.search ? String(router.query.search) : undefined;
+  const [searchText, setSearchText] = React.useState<string>(querySearchText ?? '');
 
   function handleSwitchPage(event: React.ChangeEvent<unknown>, value: number) {
     router.push({
@@ -46,14 +48,22 @@ function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>)
     });
   }
 
+  useDebounce(
+    () => {
+      router.push({
+        query: {
+          search: searchText,
+          page: 1,
+        },
+      });
+    },
+    250,
+    [searchText]
+  );
+
   function handleSearch(event: React.ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
-    router.push({
-      query: {
-        search: value,
-        page: 1,
-      },
-    });
+    setSearchText(value);
   }
 
   return (
@@ -76,7 +86,13 @@ function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>)
             width: 400,
           }}
         >
-          <TextField fullWidth label="Search" variant="outlined" onChange={handleSearch} />
+          <TextField
+            fullWidth
+            label="Search"
+            variant="outlined"
+            value={searchText}
+            onChange={handleSearch}
+          />
         </Box>
         <Box
           sx={{
@@ -85,26 +101,44 @@ function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>)
             gap: 2,
           }}
         >
-          <Pagination page={page} count={data.info.pages} onChange={handleSwitchPage} />
+          <Pagination
+            page={page}
+            count={data.info.pages}
+            siblingCount={2}
+            onChange={handleSwitchPage}
+          />
           <Typography variant="body1">{data.info.count} results found</Typography>
         </Box>
       </Box>
       <TableContainer>
-        <Table>
+        <Table
+          sx={{
+            border: '1px solid #e0e0e0',
+          }}
+        >
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Species</TableCell>
               <TableCell>Gender</TableCell>
-              <TableCell>origin</TableCell>
-              <TableCell>location</TableCell>
+              <TableCell>Origin</TableCell>
+              <TableCell>Location</TableCell>
               <TableCell>Created At</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {data.results.map((row, index) => (
-              <TableRow key={index}>
+              <TableRow
+                key={index}
+                sx={{
+                  cursor: 'pointer',
+                  textDecoration: 'none',
+                  '&:hover': {
+                    backgroundColor: '#f5f5f5',
+                  },
+                }}
+              >
                 <TableCell>{row.name}</TableCell>
                 <TableCell>{row.status}</TableCell>
                 <TableCell>{row.species}</TableCell>
