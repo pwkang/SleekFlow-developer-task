@@ -33,3 +33,13 @@ export const fetchContacts = async ({
     };
   }
 };
+
+interface IFindContact {
+  id: number;
+}
+
+export const findContact = async ({id}: IFindContact): Promise<IContact | undefined> => {
+  const page = Math.floor(id / 20) + 1;
+  const {results} = await fetchContacts({page});
+  return results.find((contact) => contact.id === id);
+};
