@@ -49,6 +49,11 @@ function ContactItem({data, episodes}: InferGetServerSidePropsType<typeof getSer
 
   if (!data) return null;
 
+  function getEpisode(url: string) {
+    const id = url.match(/\/(\d+)$/)?.[1];
+    if (episodes) return episodes?.find((episode) => episode.id === Number(id));
+  }
+
   function handleSwitchPage(event: React.ChangeEvent<unknown>, value: number) {
     setEpisodePage(value);
   }
@@ -79,13 +84,14 @@ function ContactItem({data, episodes}: InferGetServerSidePropsType<typeof getSer
             </TableRow>
           </TableHead>
           <TableBody>
-            {episodes
+            {data.episode
               ?.slice((episodePage - 1) * EPISODES_PER_PAGE, episodePage * EPISODES_PER_PAGE)
-              ?.map((episode) => (
-                <TableRow key={episode.id}>
-                  <TableCell>{episode.name}</TableCell>
-                  <TableCell>{episode.air_date}</TableCell>
-                  <TableCell>{episode.episode}</TableCell>
+              ?.map(getEpisode)
+              ?.map((episode, index) => (
+                <TableRow key={index}>
+                  <TableCell>{episode?.name}</TableCell>
+                  <TableCell>{episode?.air_date}</TableCell>
+                  <TableCell>{episode?.episode}</TableCell>
                 </TableRow>
               ))}
           </TableBody>

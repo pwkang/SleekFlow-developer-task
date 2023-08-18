@@ -50,7 +50,7 @@ interface IGetEpisodes {
 
 export const getEpisodes = async ({ids}: IGetEpisodes): Promise<IEpisode[]> => {
   try {
-    const {data} = await axiosClient.get(`/episode/${ids.join(',')}`);
+    const {data} = await axiosClient.get(`/episode/[${ids.join(',')}]`);
     return data;
   } catch (error) {
     return [];
