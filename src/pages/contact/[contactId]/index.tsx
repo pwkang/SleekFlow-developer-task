@@ -171,7 +171,11 @@ function ContactItem({data, episodes}: InferGetServerSidePropsType<typeof getSer
               onChange={handleSwitchPage}
               siblingCount={2}
             />
-            <Typography variant="body1">{episodes?.length ?? 0} episodes </Typography>
+            <Typography variant="body1">
+              Showing {episodePage * EPISODES_PER_PAGE - 9}-
+              {Math.min(episodePage * EPISODES_PER_PAGE, episodes?.length ?? 0)} of{' '}
+              {episodes?.length ?? 0} episodes
+            </Typography>
           </Box>
         </Stack>
       </Stack>
