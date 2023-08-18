@@ -52,8 +52,8 @@ function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>)
     () => {
       router.push({
         query: {
-          search: searchText,
-          page: 1,
+          ...(searchText ? {search: searchText} : {}),
+          page: searchText === querySearchText ? page : 1,
         },
       });
     },
@@ -99,6 +99,7 @@ function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>)
             variant="outlined"
             value={searchText}
             onChange={handleSearch}
+            size="small"
           />
         </Box>
         <Box
@@ -124,14 +125,15 @@ function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>)
           }}
         >
           <TableHead>
-            <TableRow>
+            <TableRow
+              sx={{
+                backgroundColor: '#ededed',
+              }}
+            >
               <TableCell>Name</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Species</TableCell>
               <TableCell>Gender</TableCell>
-              <TableCell>Origin</TableCell>
-              <TableCell>Location</TableCell>
-              <TableCell>Created At</TableCell>
             </TableRow>
           </TableHead>
           <TableBody onClick={handleClick}>
@@ -143,7 +145,7 @@ function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>)
                   cursor: 'pointer',
                   textDecoration: 'none',
                   '&:hover': {
-                    backgroundColor: '#f5f5f5',
+                    backgroundColor: '#f8f8f8',
                   },
                 }}
               >
@@ -151,9 +153,6 @@ function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>)
                 <TableCell>{row.status}</TableCell>
                 <TableCell>{row.species}</TableCell>
                 <TableCell>{row.gender}</TableCell>
-                <TableCell>{row.origin.name}</TableCell>
-                <TableCell>{row.location.name}</TableCell>
-                <TableCell>{row.created}</TableCell>
               </TableRow>
             ))}
           </TableBody>

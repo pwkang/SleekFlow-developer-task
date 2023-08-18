@@ -5,6 +5,9 @@ import {
   Avatar,
   Box,
   Divider,
+  Grid,
+  Icon,
+  IconButton,
   Pagination,
   Stack,
   Table,
@@ -17,7 +20,7 @@ import {
 import {useRouter} from 'next/router';
 
 interface Repo {
-  data?: IContact;
+  data: IContact | null;
   episodes?: IEpisode[];
 }
 
@@ -32,8 +35,8 @@ export const getServerSideProps: GetServerSideProps<Repo> = async ({params}) => 
   });
   return {
     props: {
-      data,
-      episodes,
+      data: data ?? null,
+      episodes: episodes ?? [],
     },
   };
 };
@@ -60,24 +63,75 @@ function ContactItem({data, episodes}: InferGetServerSidePropsType<typeof getSer
 
   return (
     <Stack>
-      <Box>
-        <Avatar src={data.image} />
-        <Typography>{data.name}</Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 2,
+          alignItems: 'center',
+          paddingX: 16,
+          paddingY: 4,
+          backgroundColor: '#b2b2b2',
+        }}
+      >
+        <IconButton onClick={() => router.back()}>
+          <Icon>arrow_back</Icon>
+        </IconButton>
+        <Avatar
+          src={data.image}
+          sx={{
+            width: 80,
+            height: 80,
+          }}
+        />
+        <Typography variant="h3">{data.name}</Typography>
       </Box>
       <Divider />
-      <Box>
-        <Typography>Personal Info</Typography>
-        <Box>
-          <Typography>Status: {data.status}</Typography>
-          <Typography>Gender: {data.gender}</Typography>
-          <Typography>Location: {data.location.name}</Typography>
-          <Typography>Origin: {data.origin.name}</Typography>
-          <Typography>Species: {data.species}</Typography>
-        </Box>
-        <Typography>Episodes</Typography>
-        <Table>
+      <Stack
+        sx={{
+          gap: 2,
+          paddingX: 16,
+          paddingY: 4,
+        }}
+      >
+        <Typography variant="h6">Personal Info</Typography>
+        <Grid
+          container
+          sx={{
+            backgroundColor: '#f5f5f5',
+            width: '100%',
+            paddingX: 4,
+            paddingY: 2,
+            rowGap: 2,
+          }}
+        >
+          <Grid item xs={12} md={6}>
+            <Typography>Status: {data.status}</Typography>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Typography>Gender: {data.gender}</Typography>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Typography>Location: {data.location.name}</Typography>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Typography>Origin: {data.origin.name}</Typography>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Typography>Species: {data.species}</Typography>
+          </Grid>
+        </Grid>
+        <Typography variant="h6">Episodes</Typography>
+        <Table
+          sx={{
+            border: '1px solid #e0e0e0',
+          }}
+        >
           <TableHead>
-            <TableRow>
+            <TableRow
+              sx={{
+                backgroundColor: '#ededed',
+              }}
+            >
               <TableCell>name</TableCell>
               <TableCell>Air Date</TableCell>
               <TableCell>Episode</TableCell>
@@ -112,7 +166,7 @@ function ContactItem({data, episodes}: InferGetServerSidePropsType<typeof getSer
           />
           <Typography variant="body1">{episodes?.length ?? 0} episodes </Typography>
         </Box>
-      </Box>
+      </Stack>
     </Stack>
   );
 }

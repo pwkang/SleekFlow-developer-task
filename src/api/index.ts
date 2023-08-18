@@ -39,7 +39,7 @@ interface IFindContact {
 }
 
 export const findContact = async ({id}: IFindContact): Promise<IContact | undefined> => {
-  const page = Math.floor(id / 20) + 1;
+  const page = Math.ceil(id / 20);
   const {results} = await fetchContacts({page});
   return results.find((contact) => contact.id === id);
 };
