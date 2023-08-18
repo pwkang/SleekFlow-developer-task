@@ -1,31 +1,17 @@
 import React, {useEffect} from 'react';
 import {GetServerSideProps, InferGetServerSidePropsType} from 'next';
 import {findContact, getEpisodes} from '@/api';
-import {
-  Avatar,
-  Box,
-  Divider,
-  Grid,
-  Icon,
-  IconButton,
-  Pagination,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import {Divider, Stack, Typography} from '@mui/material';
 import {useRouter} from 'next/router';
 import PageInfo from '@/components/pageInfo';
+import PersonalInfoSection from '@/components/PersonalInfoSection';
+import EpisodesTable from '@/components/EpisodesTable';
+import ContactHeader from '@/components/ContactHeader';
 
 interface Repo {
   data: IContact | null;
   episodes?: IEpisode[];
 }
-
-const EPISODES_PER_PAGE = 10;
 
 export const getServerSideProps: GetServerSideProps<Repo> = async ({params}) => {
   const data = await findContact({
@@ -44,7 +30,6 @@ export const getServerSideProps: GetServerSideProps<Repo> = async ({params}) => 
 
 function ContactItem({data, episodes}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
-  const [episodePage, setEpisodePage] = React.useState<number>(1);
 
   useEffect(() => {
     if (data) return;
@@ -53,15 +38,6 @@ function ContactItem({data, episodes}: InferGetServerSidePropsType<typeof getSer
 
   if (!data) return null;
 
-  function getEpisode(url: string) {
-    const id = url.match(/\/(\d+)$/)?.[1];
-    if (episodes) return episodes?.find((episode) => episode.id === Number(id));
-  }
-
-  function handleSwitchPage(event: React.ChangeEvent<unknown>, value: number) {
-    setEpisodePage(value);
-  }
-
   return (
     <>
       <PageInfo
@@ -69,37 +45,7 @@ function ContactItem({data, episodes}: InferGetServerSidePropsType<typeof getSer
         description={`View information about ${data.name}`}
       />
       <Stack>
-        <Box
-          sx={{
-            display: 'flex',
-            gap: 2,
-            alignItems: 'center',
-            paddingX: {xs: 2, md: 16},
-            paddingY: {xs: 2, md: 4},
-            backgroundColor: '#b2b2b2',
-          }}
-        >
-          <IconButton onClick={() => router.back()}>
-            <Icon>arrow_back</Icon>
-          </IconButton>
-          <Avatar
-            src={data.image}
-            sx={{
-              width: {xs: 40, md: 80},
-              height: {xs: 40, md: 80},
-            }}
-          />
-          <Typography
-            sx={{
-              typography: {
-                xs: 'h5',
-                sm: 'h3',
-              },
-            }}
-          >
-            {data.name}
-          </Typography>
-        </Box>
+        <ContactHeader data={data} />
         <Divider />
         <Stack
           sx={{
@@ -109,86 +55,10 @@ function ContactItem({data, episodes}: InferGetServerSidePropsType<typeof getSer
           }}
         >
           <Typography variant="h6">Personal Info</Typography>
-          <Grid
-            container
-            sx={{
-              backgroundColor: '#e3e2e2',
-              width: '100%',
-              paddingX: 4,
-              paddingY: 2,
-              rowGap: 2,
-            }}
-          >
-            <Grid item xs={12} md={6}>
-              <Typography>Status: {data.status}</Typography>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography>Gender: {data.gender}</Typography>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography>Location: {data.location.name}</Typography>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography>Origin: {data.origin.name}</Typography>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography>Species: {data.species}</Typography>
-            </Grid>
-          </Grid>
+          <PersonalInfoSection data={data} />
+
           <Typography variant="h6">Episodes</Typography>
-          <Table
-            sx={{
-              border: '1px solid #e0e0e0',
-              backgroundColor: '#fff',
-            }}
-          >
-            <TableHead>
-              <TableRow
-                sx={{
-                  backgroundColor: '#ededed',
-                }}
-              >
-                <TableCell>name</TableCell>
-                <TableCell>Air Date</TableCell>
-                <TableCell>Episode</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.episode
-                ?.slice((episodePage - 1) * EPISODES_PER_PAGE, episodePage * EPISODES_PER_PAGE)
-                ?.map(getEpisode)
-                ?.map((episode, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{episode?.name}</TableCell>
-                    <TableCell>{episode?.air_date}</TableCell>
-                    <TableCell>{episode?.episode}</TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-          <Stack
-            sx={{
-              flexDirection: {
-                xs: 'column',
-                md: 'row',
-              },
-              alignItems: 'center',
-              gap: 2,
-              justifyContent: 'flex-end',
-            }}
-          >
-            <Pagination
-              count={Math.ceil((episodes?.length ?? 0) / EPISODES_PER_PAGE)}
-              page={episodePage}
-              onChange={handleSwitchPage}
-              siblingCount={2}
-            />
-            <Typography variant="body1">
-              Showing {episodePage * EPISODES_PER_PAGE - 9}-
-              {Math.min(episodePage * EPISODES_PER_PAGE, episodes?.length ?? 0)} of{' '}
-              {episodes?.length ?? 0} episodes
-            </Typography>
-          </Stack>
+          <EpisodesTable episodes={episodes ?? []} />
         </Stack>
       </Stack>
     </>
