@@ -51,7 +51,7 @@ function Index() {
               },
             }}
           >
-            Enter Contact List
+            View Contact List
           </Button>
         </Box>
       </Box>

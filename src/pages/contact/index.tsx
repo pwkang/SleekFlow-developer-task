@@ -42,9 +42,9 @@ interface PaginationItemProps {
 
 function PaginationItem({page, handleSwitchPage, data}: PaginationItemProps) {
   return (
-    <Box
+    <Stack
       sx={{
-        display: 'flex',
+        flexDirection: {xs: 'column', md: 'row'},
         alignItems: 'center',
         gap: 2,
       }}
@@ -59,7 +59,7 @@ function PaginationItem({page, handleSwitchPage, data}: PaginationItemProps) {
         Showing {page * 20 - 19}-{Math.min(page * 20, data.info.count)} of {data.info.count}{' '}
         contacts
       </Typography>
-    </Box>
+    </Stack>
   );
 }
 
@@ -113,20 +113,22 @@ function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>)
       <Stack
         sx={{
           gap: 2,
-          paddingY: 8,
-          paddingX: 16,
+          paddingY: {xs: 2, md: 8},
+          paddingX: {xs: 2, md: 8},
         }}
       >
         <Typography variant="h3">Contacts</Typography>
-        <Box
+        <Stack
           sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
+            justifyContent: {xs: 'center', sm: 'space-between'},
+            flexDirection: {xs: 'column', md: 'row'},
+            gap: {xs: 2, md: 0},
           }}
         >
           <Box
             sx={{
-              width: 400,
+              justifyContent: {xs: 'center', sm: 'flex-start'},
+              width: {xs: '100%', md: 400},
             }}
           >
             <TextField
@@ -142,7 +144,7 @@ function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>)
             />
           </Box>
           <PaginationItem page={page} data={data} handleSwitchPage={handleSwitchPage} />
-        </Box>
+        </Stack>
         <TableContainer>
           <Table
             sx={{
@@ -187,7 +189,7 @@ function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>)
         <Box
           sx={{
             display: 'flex',
-            justifyContent: 'flex-end',
+            justifyContent: {xs: 'center', md: 'flex-end'},
           }}
         >
           <PaginationItem page={page} data={data} handleSwitchPage={handleSwitchPage} />

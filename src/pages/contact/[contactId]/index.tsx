@@ -74,8 +74,8 @@ function ContactItem({data, episodes}: InferGetServerSidePropsType<typeof getSer
             display: 'flex',
             gap: 2,
             alignItems: 'center',
-            paddingX: 16,
-            paddingY: 4,
+            paddingX: {xs: 2, md: 16},
+            paddingY: {xs: 2, md: 4},
             backgroundColor: '#b2b2b2',
           }}
         >
@@ -85,18 +85,27 @@ function ContactItem({data, episodes}: InferGetServerSidePropsType<typeof getSer
           <Avatar
             src={data.image}
             sx={{
-              width: 80,
-              height: 80,
+              width: {xs: 40, md: 80},
+              height: {xs: 40, md: 80},
             }}
           />
-          <Typography variant="h3">{data.name}</Typography>
+          <Typography
+            sx={{
+              typography: {
+                xs: 'h5',
+                sm: 'h3',
+              },
+            }}
+          >
+            {data.name}
+          </Typography>
         </Box>
         <Divider />
         <Stack
           sx={{
             gap: 2,
-            paddingX: 16,
-            paddingY: 4,
+            paddingX: {xs: 2, md: 16},
+            paddingY: {xs: 2, md: 4},
           }}
         >
           <Typography variant="h6">Personal Info</Typography>
@@ -157,9 +166,12 @@ function ContactItem({data, episodes}: InferGetServerSidePropsType<typeof getSer
                 ))}
             </TableBody>
           </Table>
-          <Box
+          <Stack
             sx={{
-              display: 'flex',
+              flexDirection: {
+                xs: 'column',
+                md: 'row',
+              },
               alignItems: 'center',
               gap: 2,
               justifyContent: 'flex-end',
@@ -176,7 +188,7 @@ function ContactItem({data, episodes}: InferGetServerSidePropsType<typeof getSer
               {Math.min(episodePage * EPISODES_PER_PAGE, episodes?.length ?? 0)} of{' '}
               {episodes?.length ?? 0} episodes
             </Typography>
-          </Box>
+          </Stack>
         </Stack>
       </Stack>
     </>
