@@ -16,6 +16,7 @@ import {fetchContacts} from '@/api';
 import {GetServerSideProps, InferGetServerSidePropsType} from 'next';
 import {useRouter} from 'next/router';
 import {useDebounce} from 'react-use';
+import PageInfo from '@/components/pageInfo';
 
 interface Repo {
   data: IGetContactResponse;
@@ -74,91 +75,97 @@ function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>)
   }
 
   return (
-    <Stack
-      sx={{
-        gap: 2,
-        paddingY: 8,
-        paddingX: 16,
-      }}
-    >
-      <Typography variant="h3">Contacts</Typography>
-      <Box
+    <>
+      <PageInfo
+        title="Contact List - SleekFlow"
+        description="View our list of contacts with their related information"
+      />
+      <Stack
         sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
+          gap: 2,
+          paddingY: 8,
+          paddingX: 16,
         }}
       >
-        <Box
-          sx={{
-            width: 400,
-          }}
-        >
-          <TextField
-            fullWidth
-            label="Search"
-            variant="outlined"
-            value={searchText}
-            onChange={handleSearch}
-            size="small"
-          />
-        </Box>
+        <Typography variant="h3">Contacts</Typography>
         <Box
           sx={{
             display: 'flex',
-            alignItems: 'center',
-            gap: 2,
+            justifyContent: 'space-between',
           }}
         >
-          <Pagination
-            page={page}
-            count={data.info.pages}
-            siblingCount={2}
-            onChange={handleSwitchPage}
-          />
-          <Typography variant="body1">{data.info.count} results found</Typography>
+          <Box
+            sx={{
+              width: 400,
+            }}
+          >
+            <TextField
+              fullWidth
+              label="Search"
+              variant="outlined"
+              value={searchText}
+              onChange={handleSearch}
+              size="small"
+            />
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+            }}
+          >
+            <Pagination
+              page={page}
+              count={data.info.pages}
+              siblingCount={2}
+              onChange={handleSwitchPage}
+            />
+            <Typography variant="body1">{data.info.count} results found</Typography>
+          </Box>
         </Box>
-      </Box>
-      <TableContainer>
-        <Table
-          sx={{
-            border: '1px solid #e0e0e0',
-          }}
-        >
-          <TableHead>
-            <TableRow
-              sx={{
-                backgroundColor: '#ededed',
-              }}
-            >
-              <TableCell>Name</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Species</TableCell>
-              <TableCell>Gender</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody onClick={handleClick}>
-            {data.results.map((row, index) => (
+        <TableContainer>
+          <Table
+            sx={{
+              border: '1px solid #e0e0e0',
+            }}
+          >
+            <TableHead>
               <TableRow
-                id={String(row.id)}
-                key={index}
                 sx={{
-                  cursor: 'pointer',
-                  textDecoration: 'none',
-                  '&:hover': {
-                    backgroundColor: '#f8f8f8',
-                  },
+                  backgroundColor: '#ededed',
                 }}
               >
-                <TableCell>{row.name}</TableCell>
-                <TableCell>{row.status}</TableCell>
-                <TableCell>{row.species}</TableCell>
-                <TableCell>{row.gender}</TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Species</TableCell>
+                <TableCell>Gender</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Stack>
+            </TableHead>
+            <TableBody onClick={handleClick}>
+              {data.results.map((row, index) => (
+                <TableRow
+                  id={String(row.id)}
+                  key={index}
+                  sx={{
+                    cursor: 'pointer',
+                    textDecoration: 'none',
+                    '&:hover': {
+                      backgroundColor: '#f8f8f8',
+                    },
+                  }}
+                >
+                  <TableCell>{row.name}</TableCell>
+                  <TableCell>{row.status}</TableCell>
+                  <TableCell>{row.species}</TableCell>
+                  <TableCell>{row.gender}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Stack>
+    </>
   );
 }
 
