@@ -51,10 +51,11 @@ function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>)
 
   useDebounce(
     () => {
+      const page = router.query.page ? Number(router.query.page) : 1;
       router.push({
         query: {
           ...(searchText ? {search: searchText} : {}),
-          page: searchText === querySearchText ? page : 1,
+          ...(page === 1 ? {} : {page}),
         },
       });
     },
@@ -106,6 +107,9 @@ function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>)
               value={searchText}
               onChange={handleSearch}
               size="small"
+              sx={{
+                backgroundColor: '#fff',
+              }}
             />
           </Box>
           <Box
@@ -128,12 +132,13 @@ function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>)
           <Table
             sx={{
               border: '1px solid #e0e0e0',
+              backgroundColor: '#fff',
             }}
           >
             <TableHead>
               <TableRow
                 sx={{
-                  backgroundColor: '#ededed',
+                  backgroundColor: '#e5e5e5',
                 }}
               >
                 <TableCell>Name</TableCell>

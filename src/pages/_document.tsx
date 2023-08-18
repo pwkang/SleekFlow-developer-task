@@ -10,6 +10,7 @@ export default function Document() {
         style={{
           margin: 0,
           padding: 0,
+          backgroundColor: '#f5f5f5',
         }}
       >
         <Main />

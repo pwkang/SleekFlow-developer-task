@@ -103,7 +103,7 @@ function ContactItem({data, episodes}: InferGetServerSidePropsType<typeof getSer
           <Grid
             container
             sx={{
-              backgroundColor: '#f5f5f5',
+              backgroundColor: '#e3e2e2',
               width: '100%',
               paddingX: 4,
               paddingY: 2,
@@ -130,6 +130,7 @@ function ContactItem({data, episodes}: InferGetServerSidePropsType<typeof getSer
           <Table
             sx={{
               border: '1px solid #e0e0e0',
+              backgroundColor: '#fff',
             }}
           >
             <TableHead>
