@@ -43,3 +43,16 @@ export const findContact = async ({id}: IFindContact): Promise<IContact | undefi
   const {results} = await fetchContacts({page});
   return results.find((contact) => contact.id === id);
 };
+
+interface IGetEpisodes {
+  ids: string[];
+}
+
+export const getEpisodes = async ({ids}: IGetEpisodes): Promise<IEpisode[]> => {
+  try {
+    const {data} = await axiosClient.get(`/episode/${ids.join(',')}`);
+    return data;
+  } catch (error) {
+    return [];
+  }
+};

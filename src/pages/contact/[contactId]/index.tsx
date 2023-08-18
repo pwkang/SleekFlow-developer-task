@@ -1,27 +1,46 @@
 import React, {useEffect} from 'react';
 import {GetServerSideProps, InferGetServerSidePropsType} from 'next';
-import {findContact} from '@/api';
-import {Avatar, Box, Divider, Stack, Typography} from '@mui/material';
+import {findContact, getEpisodes} from '@/api';
+import {
+  Avatar,
+  Box,
+  Divider,
+  Pagination,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material';
 import {useRouter} from 'next/router';
 
 interface Repo {
   data?: IContact;
+  episodes?: IEpisode[];
 }
+
+const EPISODES_PER_PAGE = 10;
 
 export const getServerSideProps: GetServerSideProps<Repo> = async ({params}) => {
   const data = await findContact({
     id: Number(params?.contactId),
   });
+  const episodes = await getEpisodes({
+    ids: (data?.episode.map((url) => url.match(/\/(\d+)$/)?.[1]).filter(Boolean) as string[]) ?? [],
+  });
   return {
     props: {
       data,
+      episodes,
     },
   };
 };
 
-function ContactItem({data}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  console.log(data);
+function ContactItem({data, episodes}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
+  const [episodePage, setEpisodePage] = React.useState<number>(1);
 
   useEffect(() => {
     if (data) return;
@@ -29,6 +48,10 @@ function ContactItem({data}: InferGetServerSidePropsType<typeof getServerSidePro
   }, [data]);
 
   if (!data) return null;
+
+  function handleSwitchPage(event: React.ChangeEvent<unknown>, value: number) {
+    setEpisodePage(value);
+  }
 
   return (
     <Stack>
@@ -45,6 +68,43 @@ function ContactItem({data}: InferGetServerSidePropsType<typeof getServerSidePro
           <Typography>Location: {data.location.name}</Typography>
           <Typography>Origin: {data.origin.name}</Typography>
           <Typography>Species: {data.species}</Typography>
+        </Box>
+        <Typography>Episodes</Typography>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>name</TableCell>
+              <TableCell>Air Date</TableCell>
+              <TableCell>Episode</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {episodes
+              ?.slice((episodePage - 1) * EPISODES_PER_PAGE, episodePage * EPISODES_PER_PAGE)
+              ?.map((episode) => (
+                <TableRow key={episode.id}>
+                  <TableCell>{episode.name}</TableCell>
+                  <TableCell>{episode.air_date}</TableCell>
+                  <TableCell>{episode.episode}</TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            justifyContent: 'flex-end',
+          }}
+        >
+          <Pagination
+            count={Math.ceil((episodes?.length ?? 0) / EPISODES_PER_PAGE)}
+            page={episodePage}
+            onChange={handleSwitchPage}
+            siblingCount={2}
+          />
+          <Typography variant="body1">{episodes?.length ?? 0} episodes </Typography>
         </Box>
       </Box>
     </Stack>
