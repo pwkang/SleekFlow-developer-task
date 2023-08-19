@@ -17,6 +17,7 @@ interface ContactsTableProps {
 
 function ContactsTable({data, onItemClick, loading}: ContactsTableProps) {
   function handleClick(event: React.MouseEvent<HTMLTableSectionElement, MouseEvent>) {
+    if (loading) return;
     const target = event.target as HTMLElement;
     const parent = target.parentElement;
     if (!parent) return;
