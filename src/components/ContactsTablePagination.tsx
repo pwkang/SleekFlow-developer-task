@@ -23,7 +23,7 @@ function ContactsTablePagination({page, handleSwitchPage, data}: PaginationItemP
         onChange={handleSwitchPage}
       />
       <Typography variant="body1">
-        Showing {page * 20 - 19}-{Math.min(page * 20, data.info.count)} of {data.info.count}{' '}
+        Showing {page * 20 - 19} - {Math.min(page * 20, data.info.count)} of {data.info.count}{' '}
         contacts
       </Typography>
     </Stack>

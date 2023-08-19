@@ -1,19 +1,26 @@
-import {useRouter} from 'next/router';
 import React from 'react';
-import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
+import {
+  Skeleton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
 
 interface ContactsTableProps {
   data: IGetContactResponse;
+  onItemClick: (id: string) => void;
+  loading?: boolean;
 }
 
-function ContactsTable({data}: ContactsTableProps) {
-  const router = useRouter();
-
+function ContactsTable({data, onItemClick, loading}: ContactsTableProps) {
   function handleClick(event: React.MouseEvent<HTMLTableSectionElement, MouseEvent>) {
     const target = event.target as HTMLElement;
     const parent = target.parentElement;
     if (!parent) return;
-    router.push(`/contact/${parent.id}`);
+    onItemClick(parent.id);
   }
 
   return (
@@ -37,24 +44,51 @@ function ContactsTable({data}: ContactsTableProps) {
           </TableRow>
         </TableHead>
         <TableBody onClick={handleClick}>
-          {data.results.map((row, index) => (
-            <TableRow
-              id={String(row.id)}
-              key={index}
-              sx={{
-                cursor: 'pointer',
-                textDecoration: 'none',
-                '&:hover': {
-                  backgroundColor: '#f8f8f8',
-                },
-              }}
-            >
-              <TableCell>{row.name}</TableCell>
-              <TableCell>{row.status}</TableCell>
-              <TableCell>{row.species}</TableCell>
-              <TableCell>{row.gender}</TableCell>
-            </TableRow>
-          ))}
+          {loading &&
+            new Array(20).fill(0).map((_, index) => (
+              <TableRow
+                key={index}
+                sx={{
+                  cursor: 'pointer',
+                  textDecoration: 'none',
+                  '&:hover': {
+                    backgroundColor: '#f8f8f8',
+                  },
+                }}
+              >
+                <TableCell width="60%">
+                  <Skeleton variant="text" />
+                </TableCell>
+                <TableCell width="10%">
+                  <Skeleton variant="text" />
+                </TableCell>
+                <TableCell width="20%">
+                  <Skeleton variant="text" />
+                </TableCell>
+                <TableCell width="10%">
+                  <Skeleton variant="text" />
+                </TableCell>
+              </TableRow>
+            ))}
+          {!loading &&
+            data.results.map((row, index) => (
+              <TableRow
+                id={String(row.id)}
+                key={index}
+                sx={{
+                  cursor: 'pointer',
+                  textDecoration: 'none',
+                  '&:hover': {
+                    backgroundColor: '#f8f8f8',
+                  },
+                }}
+              >
+                <TableCell width="60%">{row.name}</TableCell>
+                <TableCell width="10%">{row.status}</TableCell>
+                <TableCell width="20%">{row.species}</TableCell>
+                <TableCell width="10%">{row.gender}</TableCell>
+              </TableRow>
+            ))}
         </TableBody>
       </Table>
     </TableContainer>

@@ -1,9 +1,22 @@
-import React from 'react';
-import {Box, Button, Typography} from '@mui/material';
+import React, {useEffect, useState} from 'react';
+import {Box, Typography} from '@mui/material';
 import PageInfo from '@/components/pageInfo';
 import Link from 'next/link';
+import {LoadingButton} from '@mui/lab';
 
 function Index() {
+  const [loading, setLoading] = useState<boolean>(false);
+
+  function handleLoad() {
+    setLoading(true);
+  }
+
+  useEffect(() => {
+    return () => {
+      setLoading(false);
+    };
+  }, []);
+
   return (
     <>
       <PageInfo title="SleekFlow Web Frontend Developer Task" description="Author: Por Wei Kang" />
@@ -39,10 +52,12 @@ function Index() {
             by Por Wei Kang
           </Typography>
 
-          <Button
+          <LoadingButton
             variant="contained"
             component={Link}
             href="/contact"
+            onClick={handleLoad}
+            loading={loading}
             sx={{
               marginTop: '1rem',
               backgroundColor: '#63636f',
@@ -52,7 +67,7 @@ function Index() {
             }}
           >
             View Contact List
-          </Button>
+          </LoadingButton>
         </Box>
       </Box>
     </>

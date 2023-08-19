@@ -1,36 +1,25 @@
 import React from 'react';
-import {Box, Stack, TextField, Typography} from '@mui/material';
-import {fetchContacts} from '@/api';
-import {GetServerSideProps, InferGetServerSidePropsType} from 'next';
+import {Box, CircularProgress, Stack, TextField, Typography} from '@mui/material';
 import {useRouter} from 'next/router';
 import {useDebounce} from 'react-use';
 import PageInfo from '@/components/pageInfo';
 import ContactsTable from '@/components/ContactsTable';
 import ContactsTablePagination from '@/components/ContactsTablePagination';
+import useSelectContacts from '@/hook/useSelectContacts';
 
-interface Repo {
-  data: IGetContactResponse;
-}
-
-export const getServerSideProps: GetServerSideProps<Repo> = async ({query}) => {
-  const data = await fetchContacts({
-    page: query.page ? Number(query.page) : 1,
-    search: query.search ? String(query.search) : undefined,
-  });
-  return {
-    props: {
-      data,
-    },
-  };
-};
-
-function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+function Contact() {
   const router = useRouter();
   const page = router.query.page ? Number(router.query.page) : 1;
   const querySearchText = router.query.search ? String(router.query.search) : undefined;
+  const [data, isLoading] = useSelectContacts({
+    page,
+    search: querySearchText,
+  });
+  const [loadingContact, setLoadingContact] = React.useState<boolean>(false);
   const [searchText, setSearchText] = React.useState<string>(querySearchText ?? '');
 
   function handleSwitchPage(event: React.ChangeEvent<unknown>, value: number) {
+    // setLoadingTable(true);
     router.push({
       query: {
         ...router.query,
@@ -55,7 +44,18 @@ function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>)
 
   function handleSearch(event: React.ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
+    router.push({
+      query: {
+        ...router.query,
+        page: 1,
+      },
+    });
     setSearchText(value);
+  }
+
+  function handleItemClick(id: string) {
+    setLoadingContact(true);
+    router.push(`/contact/${id}`);
   }
 
   return (
@@ -64,6 +64,24 @@ function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>)
         title="Contact List - SleekFlow"
         description="View our list of contacts with their related information"
       />
+      {loadingContact && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 9999,
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      )}
       <Stack
         sx={{
           gap: 2,
@@ -99,7 +117,7 @@ function Contact({data}: InferGetServerSidePropsType<typeof getServerSideProps>)
           </Box>
           <ContactsTablePagination page={page} data={data} handleSwitchPage={handleSwitchPage} />
         </Stack>
-        <ContactsTable data={data} />
+        <ContactsTable data={data} onItemClick={handleItemClick} loading={isLoading} />
         <Box
           sx={{
             display: 'flex',
