@@ -7,9 +7,11 @@ import PageInfo from '@/components/pageInfo';
 import PersonalInfoSection from '@/components/PersonalInfoSection';
 import EpisodesTable from '@/components/EpisodesTable';
 import ContactHeader from '@/components/ContactHeader';
+import {useFindContactQuery} from '@/tanstack/queries/useFindContactQuery';
+import {useGetEpisodesQuery} from '@/tanstack/queries/useGetEpisodesQuery';
 
 interface Repo {
-  data: IContact | null;
+  data?: IContact;
   episodes?: IEpisode[];
 }
 
@@ -22,14 +24,22 @@ export const getServerSideProps: GetServerSideProps<Repo> = async ({params}) => 
   });
   return {
     props: {
-      data: data ?? null,
+      data,
       episodes: episodes ?? [],
     },
   };
 };
 
-function ContactItem({data, episodes}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+function ContactItem(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
+  const {data} = useFindContactQuery({
+    id: Number(router.query.contactId),
+    initialData: props.data,
+  });
+  const {data: episodes} = useGetEpisodesQuery({
+    ids: (data?.episode.map((url) => url.match(/\/(\d+)$/)?.[1]).filter(Boolean) as string[]) ?? [],
+    initialData: props.episodes,
+  });
 
   useEffect(() => {
     if (data) return;

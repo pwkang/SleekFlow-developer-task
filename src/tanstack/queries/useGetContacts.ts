@@ -1,6 +1,5 @@
 import {useQuery} from '@tanstack/react-query';
-import {axiosClient} from '@/api';
-import {Simulate} from 'react-dom/test-utils';
+import {fetchContacts} from '@/api';
 
 interface UseGetContactsProps {
   page?: number;
@@ -17,15 +16,11 @@ export const useGetContacts = ({search, page}: UseGetContactsProps) => {
       },
     ],
     async ({signal}) => {
-      const {data} = await axiosClient.get('/character', {
-        params: {
-          page,
-          name: search,
-        },
+      return fetchContacts({
         signal,
+        search,
+        page: page ?? 1,
       });
-
-      return data;
     }
   );
 };

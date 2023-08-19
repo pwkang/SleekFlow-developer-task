@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, {GenericAbortSignal} from 'axios';
 
 export const axiosClient = axios.create({
   baseURL: 'https://rickandmortyapi.com/api/',
@@ -7,11 +7,13 @@ export const axiosClient = axios.create({
 interface IFetchContacts {
   page: number;
   search?: string;
+  signal?: GenericAbortSignal;
 }
 
 export const fetchContacts = async ({
   search,
   page,
+  signal,
 }: IFetchContacts): Promise<IGetContactResponse> => {
   try {
     const {data} = await axiosClient.get('/character', {
@@ -19,6 +21,7 @@ export const fetchContacts = async ({
         page,
         name: search,
       },
+      signal,
     });
     return data;
   } catch (error) {
@@ -36,21 +39,30 @@ export const fetchContacts = async ({
 
 interface IFindContact {
   id: number;
+  signal?: GenericAbortSignal;
 }
 
-export const findContact = async ({id}: IFindContact): Promise<IContact | undefined> => {
-  const page = Math.ceil(id / 20);
-  const {results} = await fetchContacts({page});
-  return results.find((contact) => contact.id === id);
+export const findContact = async ({id, signal}: IFindContact): Promise<IContact | undefined> => {
+  try {
+    const {data} = await axiosClient.get(`/character/${id}`, {
+      signal,
+    });
+    return data;
+  } catch (error) {
+    return undefined;
+  }
 };
 
 interface IGetEpisodes {
   ids: string[];
+  signal?: GenericAbortSignal;
 }
 
-export const getEpisodes = async ({ids}: IGetEpisodes): Promise<IEpisode[]> => {
+export const getEpisodes = async ({ids, signal}: IGetEpisodes): Promise<IEpisode[]> => {
   try {
-    const {data} = await axiosClient.get(`/episode/[${ids.join(',')}]`);
+    const {data} = await axiosClient.get(`/episode/[${ids.join(',')}]`, {
+      signal,
+    });
     return data;
   } catch (error) {
     return [];
